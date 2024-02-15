@@ -34,7 +34,7 @@ if (isset($_GET["NewsID"])) {
     $connection->close();
 }
 
-// Redirect back to the archived content page after restoration
-header("Location: archivedContent.php");
+// Redirect back to the listContent.php page after restoration
+header("Location: listContent.php");
 exit;
 ?>

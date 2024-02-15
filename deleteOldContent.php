@@ -1,25 +1,40 @@
 <?php
-$dbHost = "localhost";
-$dbUser = "root";
-$password = "";
-$dbName = "newsletter";
+if (isset($_GET["NewsID"])) {
+    $NewsID = $_GET["NewsID"];
 
-$connection = new mysqli($dbHost, $dbUser, $password, $dbName);
+    // Create a new database connection
+    $connection = new mysqli($dbHost, $dbUser, $password, $dbName);
 
-if ($connection->connect_error) {
-    die("Connection failed: " . $connection->connect_error);
+    // Check if the connection was successful
+    if ($connection->connect_error) {
+        die("Connection failed: " . $connection->connect_error);
+    }
+
+    // Delete the content
+    $sql = "DELETE FROM newsletter WHERE NewsID = ?";
+    $stmt = $connection->prepare($sql);
+
+    // Check if the statement was prepared successfully
+    if (!$stmt) {
+        die("Prepare failed: " . $connection->error);
+    }
+
+    // Bind the "NewsID" parameter to the prepared statement
+    $stmt->bind_param("s", $NewsID);
+
+    // Execute the prepared statement
+    if (!$stmt->execute()) {
+        die("Execute failed: " . $stmt->error);
+    }
+
+    // Close the prepared statement
+    $stmt->close();
+
+    // Close the database connection
+    $connection->close();
 }
 
-$twoMinutesAgo = date('Y-m-d H:i:s', strtotime('-2 minutes'));
-
-// Update this query to mark as archived instead of deleting
-$sql = "UPDATE newsletter SET archived = TRUE WHERE created_at < '$twoMinutesAgo' AND archived = FALSE";
-
-if ($connection->query($sql) === TRUE) {
-    echo "Content older than 2 minutes has been archived.";
-} else {
-    echo "Error: " . $sql . "<br>" . $connection->error;
-}
-
-$connection->close();
+// Redirect back to the admin preferences page
+header("Location: adminMain.php");
+exit;
 ?>

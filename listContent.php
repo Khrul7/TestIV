@@ -61,7 +61,7 @@
 </div>
 
   <div class = "container my-5">
-    <h2>List of Preferences</h2><br>
+    <h2>List of Content</h2><br>
     <a class="btn btn-primary" href="createContent.php" role="button">New Content</a>
     <a class="btn btn-primary" href="archivedContent.php" role="button">archived Content</a>
     <br><br>

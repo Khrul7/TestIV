@@ -1,49 +1,43 @@
 <?php
-$dbHost = "localhost";	// Database host, server
-$dbUser = "root";		// Database user
-$password = "";			// Database password
-$dbName = "newsletter";		// Database name
+$dbHost = "localhost";
+$dbUser = "root";
+$password = "";
+$dbName = "newsletter";
 
-//Create connection
+// Create connection
 $connection = new mysqli($dbHost, $dbUser, $password, $dbName);
 
 $Content = "";
-
-
 $errorMessage = "";
 $successMessage = "";
 
-if ( $_SERVER['REQUEST_METHOD'] == 'POST'){
-        $Content = $_POST["Content"];
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $Content = $_POST["Content"];
 
-        do {
-            if ( empty($Content) ) {
-                $errorMessage = "All the fields are required";
-                break;
-            }
+    do {
+        if (empty($Content)) {
+            $errorMessage = "All the fields are required";
+            break;
+        }
 
-            // add new preference to database
-            $sql = "INSERT INTO newsletter (Content)".
-                    "VALUES ('$Content')";
-            $result = $connection->query($sql);
+        // Add new preference to the database with the creation timestamp
+        $sql = "INSERT INTO newsletter (Content) VALUES ('$Content')";
+        $result = $connection->query($sql);
 
-            if (!$result){
-                $errorMessage = "Invalid query: " . $connection->error;
-                break;
-            }
+        if (!$result) {
+            $errorMessage = "Invalid query: " . $connection->error;
+            break;
+        }
 
-            $Content = "";
-            
+        $Content = "";
 
-            $successMessage = "Preference added correctly";
+        $successMessage = "Preference added correctly";
 
-            header("location: adminMain.php");
-            exit;
+        header("location: adminMain.php");
+        exit;
 
-
-        } 
-        while (false);
-    }
+    } while (false);
+}
 ?>
 
 <!DOCTYPE html>
@@ -153,6 +147,12 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST'){
     </style>
 </head>
 <body>
+<script>
+        // After 2 minutes, redirect to deleteContent.php to delete the content
+        setTimeout(function(){
+            window.location.href = "deleteOldContent.php?NewsID=<?php echo $connection->insert_id; ?>";
+        }, 120000); // 120000 milliseconds = 2 minutes
+    </script>
 <div class="topnav">
     <!-- Centered link -->
     <div class="topnav-centered">
