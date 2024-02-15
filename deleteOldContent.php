@@ -1,40 +1,34 @@
 <?php
-if (isset($_GET["NewsID"])) {
-    $NewsID = $_GET["NewsID"];
+$dbHost = "localhost";
+$dbUser = "root";
+$password = "";
+$dbName = "newsletter";
 
-    // Create a new database connection
-    $connection = new mysqli($dbHost, $dbUser, $password, $dbName);
+// Create connection
+$connection = new mysqli($dbHost, $dbUser, $password, $dbName);
 
-    // Check if the connection was successful
-    if ($connection->connect_error) {
-        die("Connection failed: " . $connection->connect_error);
-    }
-
-    // Delete the content
-    $sql = "DELETE FROM newsletter WHERE NewsID = ?";
-    $stmt = $connection->prepare($sql);
-
-    // Check if the statement was prepared successfully
-    if (!$stmt) {
-        die("Prepare failed: " . $connection->error);
-    }
-
-    // Bind the "NewsID" parameter to the prepared statement
-    $stmt->bind_param("s", $NewsID);
-
-    // Execute the prepared statement
-    if (!$stmt->execute()) {
-        die("Execute failed: " . $stmt->error);
-    }
-
-    // Close the prepared statement
-    $stmt->close();
-
-    // Close the database connection
-    $connection->close();
+// Check connection
+if ($connection->connect_error) {
+    die("Connection failed: " . $connection->connect_error);
 }
 
-// Redirect back to the admin preferences page
-header("Location: adminMain.php");
-exit;
+// Calculate the timestamp for 2 minutes ago
+$twoMinutesAgo = time() - (2 * 60);
+
+// Delete content older than 2 minutes
+$sql = "DELETE FROM newsletter WHERE createAt < FROM_UNIXTIME(?)";
+$stmt = $connection->prepare($sql);
+
+if (!$stmt) {
+    die("Prepare failed: " . $connection->error);
+}
+
+$stmt->bind_param("i", $twoMinutesAgo);
+
+if (!$stmt->execute()) {
+    die("Execute failed: " . $stmt->error);
+}
+
+$stmt->close();
+$connection->close();
 ?>

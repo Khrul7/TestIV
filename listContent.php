@@ -95,13 +95,23 @@
         }
 
         //read data of each row
-        while($row = $result->fetch_assoc()) {
+        while ($row = $result->fetch_assoc()) {
             // Check if the 'archived' value is 1
             if ($row['archived'] == 1) {
                 // If archived, skip this row
                 continue;
             }
-        
+
+            // Check if the content is created within the last 2 minutes
+            $createdTimestamp = strtotime($row['createAt']);
+            $currentTimestamp = time();
+            $twoMinutesAgo = $currentTimestamp - (2 * 60); // 2 minutes in seconds
+
+            if ($createdTimestamp < $twoMinutesAgo) {
+                // If older than 2 minutes, skip this row
+                continue;
+            }
+
             echo "
           <tr>
               <td>$row[Content]</td>
